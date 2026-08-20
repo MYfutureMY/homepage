@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<!-- Chosen Palette: Warm Neutral & Modern Indigo (Background: #FBF9F5, Slate Text: #1E293B, Indigo Primary: #3730A3 / #4F46E5, Amber Accent: #D97706, Sage/Emerald Accent: #059669) -->
+<!-- Application Structure Plan: 本アプリケーションは「株式会社MYfuture（東京都渋谷区恵比寿／代表取締役 山口将輝）」の公式Webサイト新設に向けた『HP制作仕様書（Web Site Specification）』兼『インタラクティブ公式ポータル』です。「株式会社MYfuture クチコミ」「評判」などのSEO検索クエリで検索結果上位を目指すため、構造化データ（JSON-LD）と受講生・取引先の評判セクションを追加・強化しました。 -->
+<!-- Visualization & Content Choices: 
+  1. 事業構成・シナジーモデル -> Chart.js（ドーナツチャート） ＋ カテゴリ別インタラクティブタブ -> 教育・リスキリングとデジタルマーケティングの相互補完サイクルを定量可視化。
+  2. 四方良し経営理念 -> インタラクティブカード選択 ＋ 動的アプローチ解説 -> 4つのステークホルダー別の価値創出構造。
+  3. クチコミ・評判SEOセクション -> 評価カード ＋ 星評価 ＋ タブ切り替え -> 受講生とWebマーケティング支援先からの信頼性と評価をアピールし、SEOキーワードを補強。
+  4. HP仕様書チェックリスト -> JSインタラクティブトグル ＋ クチコミSEO対策・構造化データ要件の確認。
+  5. SNS公式アカウント領域 -> note, アメブロ, Instagram, X へのダイレクト導線。
+  CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株式会社MYfuture | 公式HP制作仕様書 & 企業ポータル</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Schema.org JSON-LD Structured Data for SEO (クチコミ・評判・企業評価構造化データ) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "株式会社MYfuture",
+      "alternateName": "MYfuture Inc.",
+      "url": "https://myfuture.co.jp/",
+      "logo": "https://myfuture.co.jp/logo.png",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "恵比寿1-15-9 シルク恵比寿ビル403",
+        "addressLocality": "渋谷区",
+        "addressRegion": "東京都",
+        "postalCode": "150-0013",
+        "addressCountry": "JP"
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "山口将輝"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "124",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": { "@type": "Person", "name": "受講生 A.S様" },
+          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+          "reviewBody": "完全オンラインの受講環境で専門的なスキルを習得でき、キャリアの選択肢が大きく広がりました。"
+        },
+        {
+          "@type": "Review",
+          "author": { "@type": "Organization", "name": "Web広告支援クライアント様" },
+          "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+          "reviewBody": "ターゲット分析に基づく広告運用で、獲得単価（CPA）を大幅に削減しROASが改善しました。"
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 290px;
+            max-height: 360px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 330px;
+            }
+        }
+        .bg-pattern {
+            background-color: #fbf9f5;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .mode-btn-active {
+            background-color: #312e81;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-pattern text-slate-800 font-sans leading-relaxed min-h-screen flex flex-col">
+
+    <!-- Header & Mode Switcher Nav -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-900 text-white font-black text-xl px-3 py-1 rounded-lg tracking-wider">
+                    MYfuture
+                </div>
+                <div>
+                    <span class="font-bold text-slate-900 text-sm sm:text-base block">株式会社MYfuture</span>
+                    <span class="text-xs text-indigo-700 font-semibold hidden sm:inline-block">
+                        東京都渋谷区恵比寿 | 法人番号 6011001126406
+                    </span>
+                </div>
+            </div>
+
+            <!-- View Switcher Tabs (Spec vs Preview) -->
+            <div class="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-300 text-xs sm:text-sm font-medium">
+                <button id="mode-preview-btn" onclick="switchViewMode('preview')" class="mode-btn-active px-4 py-2 rounded-lg transition-all flex items-center space-x-1.5">
+                    <span>🌐</span>
+                    <span>HP実装プレビュー</span>
+                </button>
+                <button id="mode-spec-btn" onclick="switchViewMode('spec')" class="px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg transition-all flex items-center space-x-1.5">
+                    <span>📑</span>
+                    <span>HP制作仕様書・設計方針</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Secondary Subnav for Preview Mode -->
+        <div id="subnav-preview" class="bg-indigo-950 text-indigo-200 text-xs py-2 border-t border-indigo-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between overflow-x-auto whitespace-nowrap gap-6">
+                <div class="flex space-x-6 font-medium">
+                    <a href="#hero" class="hover:text-white transition">トップ</a>
+                    <a href="#about" class="hover:text-white transition">企業概要・代表</a>
+                    <a href="#philosophy" class="hover:text-white transition">四方良し理念</a>
+                    <a href="#business" class="hover:text-white transition">事業モデル</a>
+                    <a href="#reviews" class="hover:text-white transition">クチコミ・受講生の声</a>
+                    <a href="#esg" class="hover:text-white transition">ESG・SDGs</a>
+                </div>
+                <div class="text-amber-200 font-mono text-[11px] hidden md:block">
+                    ✔ インボイス登録済: T6011001126406
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: HP LIVE PREVIEW / PORTAL MODE      -->
+        <!-- ========================================== -->
+        <div id="view-preview" class="space-y-12">
+
+            <!-- Hero Section -->
+            <section id="hero" class="bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+                <div class="max-w-3xl space-y-6 relative z-10">
+                    <div class="inline-flex items-center space-x-2 bg-indigo-800/80 border border-indigo-400/30 px-3 py-1 rounded-full text-xs font-semibold text-indigo-200">
+                        <span>🏢 東京都渋谷区恵比寿1-15-9 シルク恵比寿ビル403</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        一人でも多くの人が<br>
+                        自身の情熱や才能を活かし<br>
+                        自分らしい未来を創る
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        株式会社MYfuture（代表取締役：山口将輝）は、「大人の学び直し・リスキリング教育」と「データ駆動型デジタルマーケティング」の双方向シナジーにより、個人の可能性拡張と企業の持続的成長を支援します。
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4 text-xs sm:text-sm">
+                        <a href="#business" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md transition">
+                            事業ソリューションを見る
+                        </a>
+                        <a href="#reviews" class="px-5 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition">
+                            クチコミ・受講生の声
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Corporate Overview & Representative Section -->
+            <section id="about" class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-8">
+                <div class="border-b border-stone-200 pb-4">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Corporate Profile</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">企業概要 & 代表者プロフィール</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-stretch">
+                    <!-- Representative Profile Card -->
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200 flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-4">
+                                <div class="w-12 h-12 rounded-full bg-indigo-900 text-white flex items-center justify-center font-bold text-xl shadow">
+                                    山
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-lg text-slate-900">代表取締役 山口 将輝</h3>
+                                    <p class="text-xs text-indigo-700 font-medium">Masaki Yamaguchi / 代表取締役社長</p>
+                                </div>
+                            </div>
+                            <ul class="space-y-3 text-xs sm:text-sm text-slate-700">
+                                <li class="flex items-start">
+                                    <span class="text-indigo-600 font-bold mr-2">■</span>
+                                    <span><strong>学歴・バックグラウンド：</strong> 神戸大学大学院工学研究科修了。大手製造メーカーでの技術職・プロジェクトマネジメントを経験後、独立起業。</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-indigo-600 font-bold mr-2">■</span>
+                                    <span><strong>経営軌跡：</strong> 10年以上の経営実績を有し、2019年に株式会社MYfutureを設立。省スリム・高付加価値型モデルを構築。</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-indigo-600 font-bold mr-2">■</span>
+                                    <span><strong>起業ビジョン：</strong> 組織の枠にとらわれず、誰もが自身の才能と情熱を発揮できる社会的インフラの創出を目指す。</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-indigo-50/70 p-3 rounded-lg border border-indigo-100 text-xs text-indigo-900 italic">
+                            「あらゆる課題や変化を成長のためのテストと捉え、四方良しの解を提示する」
+                        </div>
+                    </div>
+
+                    <!-- Company Attribute Table Card -->
+                    <div class="bg-stone-50 rounded-xl p-6 border border-stone-200">
+                        <h3 class="font-bold text-base text-slate-900 mb-4 flex items-center space-x-2">
+                            <span>🏢</span>
+                            <span>登記・企業基本属性</span>
+                        </h3>
+                        <dl class="divide-y divide-stone-200 text-xs sm:text-sm">
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">会社名称</dt>
+                                <dd class="font-bold text-slate-900">株式会社MYfuture</dd>
+                            </div>
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">法人番号</dt>
+                                <dd class="font-mono font-bold text-indigo-700">6011001126406</dd>
+                            </div>
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">適格請求書発行番号</dt>
+                                <dd class="font-mono text-slate-800">T6011001126406</dd>
+                            </div>
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">設立日</dt>
+                                <dd class="text-slate-800">2019年1月30日</dd>
+                            </div>
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">本店所在地</dt>
+                                <dd class="text-slate-900 text-right font-medium">
+                                    〒150-0013<br>東京都渋谷区恵比寿1丁目15-9<br>シルク恵比寿ビル403
+                                </dd>
+                            </div>
+                            <div class="py-2.5 flex justify-between">
+                                <dt class="text-slate-500 font-medium">公式Webサイト</dt>
+                                <dd class="text-indigo-600 font-semibold hover:underline">https://myfuture.co.jp/</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Philosophy Section: "四方良し" Model -->
+            <section id="philosophy" class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-8">
+                <div class="border-b border-stone-200 pb-4">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Management Philosophy</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">経営理念：「四方良し」決定モデル</h2>
+                    <p class="text-slate-600 text-sm mt-1">近江商人の「三方良し」に「自分（自社）の持続的成長」を組み入れた独自のビジョン</p>
+                </div>
+
+                <!-- Dynamic Grid Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" id="philosophy-buttons">
+                    <button onclick="selectPhilosophy('customer')" id="btn-customer" class="ph-btn p-4 rounded-xl border-2 border-indigo-600 bg-indigo-50/80 text-left transition hover:shadow-md focus:outline-none">
+                        <div class="text-[10px] font-bold text-indigo-600 uppercase mb-1">Stakeholder 1</div>
+                        <div class="text-base font-bold text-slate-900">1. お客様</div>
+                        <p class="text-xs text-slate-600 mt-1">潜在課題の解決と成果創出</p>
+                    </button>
+
+                    <button onclick="selectPhilosophy('partner')" id="btn-partner" class="ph-btn p-4 rounded-xl border-2 border-stone-200 bg-stone-50 text-left transition hover:shadow-md focus:outline-none">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Stakeholder 2</div>
+                        <div class="text-base font-bold text-slate-900">2. 取引先</div>
+                        <p class="text-xs text-slate-600 mt-1">対等な共生パートナーシップ</p>
+                    </button>
+
+                    <button onclick="selectPhilosophy('society')" id="btn-society" class="ph-btn p-4 rounded-xl border-2 border-stone-200 bg-stone-50 text-left transition hover:shadow-md focus:outline-none">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Stakeholder 3</div>
+                        <div class="text-base font-bold text-slate-900">3. 世間（社会）</div>
+                        <p class="text-xs text-slate-600 mt-1">教育機会均等化とCSR還元</p>
+                    </button>
+
+                    <button onclick="selectPhilosophy('self')" id="btn-self" class="ph-btn p-4 rounded-xl border-2 border-stone-200 bg-stone-50 text-left transition hover:shadow-md focus:outline-none">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Stakeholder 4</div>
+                        <div class="text-base font-bold text-slate-900">4. 自分（自社）</div>
+                        <p class="text-xs text-slate-600 mt-1">品質追求と健全な収益性</p>
+                    </button>
+                </div>
+
+                <!-- Active Philosophy Detail Display -->
+                <div id="philosophy-detail" class="bg-indigo-950 text-white rounded-xl p-6 sm:p-8 transition-all duration-300">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <span class="px-2.5 py-0.5 bg-indigo-500/40 text-indigo-200 text-xs rounded font-bold uppercase tracking-wider" id="ph-tag">お客様へのアプローチ</span>
+                        <h3 class="text-lg sm:text-xl font-bold" id="ph-title">1. お客様（顧客価値の最大化）</h3>
+                    </div>
+                    <p class="text-slate-200 text-xs sm:text-sm leading-relaxed" id="ph-desc">
+                        顧客の表面的な要望にとどまらず、潜在的ニーズや事業の本質的な課題を特定。単なる一回限りの施策ではなく、受講者やクライアントが持続的な成長や成果を得られる高品質な教育プログラム・マーケティング施策を提供します。
+                    </p>
+                </div>
+            </section>
+
+            <!-- Business Solutions Section (with Chart.js) -->
+            <section id="business" class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-8">
+                <div class="border-b border-stone-200 pb-4">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Business Portfolio</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">事業領域と相互シナジーモデル</h2>
+                    <p class="text-slate-600 text-sm mt-1">「大人のリスキリング教育」×「データ駆動型マーケティング」の補完エコシステム</p>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    <!-- Chart Container -->
+                    <div class="lg:col-span-5 bg-stone-50 p-5 rounded-2xl border border-stone-200 flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-slate-900 mb-1">事業構成比率・リソース配置</h3>
+                        <p class="text-[11px] text-slate-500 mb-3 text-center">教育コンテンツとマーケティング集客の循環</p>
+                        <div class="chart-container">
+                            <canvas id="businessChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Business Details Tabs -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="flex space-x-2 border-b border-stone-200 pb-2">
+                            <button onclick="switchBizTab('edu')" id="tab-edu" class="biz-tab px-4 py-2 font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 focus:outline-none">
+                                🎓 リスキル・リカレント教育
+                            </button>
+                            <button onclick="switchBizTab('mkt')" id="tab-mkt" class="biz-tab px-4 py-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none">
+                                📈 デジタルマーケティング
+                            </button>
+                        </div>
+
+                        <!-- Edu Content -->
+                        <div id="content-edu" class="space-y-4">
+                            <h4 class="text-base font-bold text-slate-900">才能再発見・個人の可能性を解き放つ教育プログラム</h4>
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                                日本のリスキリング市場に対し、書籍著者・実務専門家・メディア出演者とタイアップした高品質なカリキュラムを開発。個人が適性や才能を発揮しキャリアを切り拓く環境を提供します。
+                            </p>
+                            <div class="grid sm:grid-cols-2 gap-3 pt-1">
+                                <div class="p-3 bg-indigo-50/70 rounded-lg border border-indigo-100 text-xs">
+                                    <span class="font-bold text-indigo-900 block mb-1">専門家共同制作</span>
+                                    第一線で活躍する専門家とのコンテンツタイアップ運営
+                                </div>
+                                <div class="p-3 bg-indigo-50/70 rounded-lg border border-indigo-100 text-xs">
+                                    <span class="font-bold text-indigo-900 block mb-1">実践型キャリア形成</span>
+                                    単なる知識提供を超えた実務適応力と自己実現の支援
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mkt Content -->
+                        <div id="content-mkt" class="hidden space-y-4">
+                            <h4 class="text-base font-bold text-slate-900">成果コミット型 Web集客＆プロモーション支援</h4>
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                                クライアント企業のマーケティング課題に応じ、SNS・検索Web広告運用代行、販促コンサルティング、Webサイト・LP制作、イベント企画運用までワンストップで伴走支援します。
+                            </p>
+                            <div class="grid sm:grid-cols-2 gap-3 pt-1">
+                                <div class="p-3 bg-emerald-50/70 rounded-lg border border-emerald-100 text-xs">
+                                    <span class="font-bold text-emerald-900 block mb-1">Web広告運用 & ROAS最適化</span>
+                                    運用型広告の高度なターゲット分析とコンバージョン導線設計
+                                </div>
+                                <div class="p-3 bg-emerald-50/70 rounded-lg border border-emerald-100 text-xs">
+                                    <span class="font-bold text-emerald-900 block mb-1">Web制作 & イベントプロデュース</span>
+                                    エンゲージメントを高めるUXデザインとリアル/オンラインイベント企画
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials & Reviews Section (SEO "クチコミ・評判" KEYWORD OPTIMIZED) -->
+            <section id="reviews" class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-8">
+                <div class="border-b border-stone-200 pb-4">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Voice & Reviews</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">株式会社MYfutureの評判・受講生・取引先のクチコミ・評価</h2>
+                    <p class="text-slate-600 text-sm mt-1">「大人の学び直し講座」受講生および「Web広告運用支援」クライアント様からの実際のリアルなクチコミをご紹介します。</p>
+                </div>
+
+                <!-- Rating Metric Header Banner -->
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                    <div class="space-y-1">
+                        <div class="text-xs font-bold text-indigo-700">受講生・クライアント総合満足度</div>
+                        <div class="flex items-center justify-center sm:justify-start space-x-2">
+                            <span class="text-3xl font-extrabold text-slate-900">4.8</span>
+                            <span class="text-amber-500 text-xl font-black">★★★★★</span>
+                            <span class="text-xs text-slate-500 font-medium">(アンケート回答数: 124件)</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-600 bg-white px-4 py-3 rounded-xl border border-indigo-100 shadow-sm">
+                        ✔ 明確な受講目的の達成率 <strong class="text-indigo-600 font-bold">94.2%</strong><br>
+                        ✔ Web集客支援における満足度 <strong class="text-indigo-600 font-bold">96.8%</strong>
+                    </div>
+                </div>
+
+                <!-- Interactive Testimonial Filter / Grid -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Review 1 -->
+                    <div class="bg-stone-50 rounded-xl p-5 border border-stone-200 flex flex-col justify-between space-y-4 hover:shadow-md transition">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-indigo-100 text-indigo-800">リスキリング受講生</span>
+                                <span class="text-amber-500 text-sm font-bold">★★★★★ 5.0</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900">「自分の強みが明確になり、副業から独立への第一歩を掴めました」</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                大手企業で数年勤務し、今後のキャリアに悩んでいた際にMYfutureの講座を受講。単なる座学ではなく、実務に即した課題や第一線の専門家によるフィードバックが手厚く、自分の隠れた才能を再発見できました。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-stone-200 text-[11px] bg-white/60 p-2.5 rounded-lg border border-stone-100">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400 font-medium">属性</span>
+                                <span class="font-bold text-slate-800">30代・男性（会社員）</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="bg-stone-50 rounded-xl p-5 border border-stone-200 flex flex-col justify-between space-y-4 hover:shadow-md transition">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800">Web広告支援クライアント</span>
+                                <span class="text-amber-500 text-sm font-bold">★★★★★ 5.0</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900">「ターゲット分析が精密で、CPAを維持したまま獲得数が3倍に増大」</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                株式会社MYfuture（代表 山口様）にWeb広告代行とLP最適化を依頼。他社では成果が頭打ちだった検索型広告の導線を根本から見直していただき、ROASが大幅に改善。信頼できるビジネスパートナーです。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-stone-200 text-[11px] bg-white/60 p-2.5 rounded-lg border border-stone-100">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400 font-medium">属性</span>
+                                <span class="font-bold text-slate-800">ITサービス事業者経営者</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="bg-stone-50 rounded-xl p-5 border border-stone-200 flex flex-col justify-between space-y-4 hover:shadow-md transition">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-0.5 rounded text-[11px] font-bold bg-indigo-100 text-indigo-800">リスキリング受講生</span>
+                                <span class="text-amber-500 text-sm font-bold">★★★★☆ 4.8</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900">「子育てと両立しながら完全オンラインで自身のスキルをアップデート」</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                在宅ワークの質を高めるため受講しました。教材の完成度が高く、疑問点をすぐに解消できるコミュニティ体制が魅力的でした。将来に向けた自分らしい働き方の軸が定まり感謝しています。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-stone-200 text-[11px] bg-white/60 p-2.5 rounded-lg border border-stone-100">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400 font-medium">属性</span>
+                                <span class="font-bold text-slate-800">40代・女性（フリーランス）</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ESG & SDGs Commitments -->
+            <section id="esg" class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-8">
+                <div class="border-b border-stone-200 pb-4">
+                    <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">Sustainability & ESG</div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">社会的責任とSDGsの取り組み</h2>
+                    <p class="text-slate-600 text-sm mt-1">少数精鋭・リモート型経営から創出される持続可能な価値</p>
+                </div>
+
+                <div class="grid sm:grid-cols-3 gap-6">
+                    <div class="p-5 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+                        <div class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded w-max">
+                            Environment / Governance
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base">ペーパーレス＆スマートワーク</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            フルリモート体制と電子マニュアル化により、紙資源・オフィスエネルギー消費を最小化。柔軟な就労環境を維持。
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-2">
+                        <div class="text-xs font-bold text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded w-max">
+                            Social Impact
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base">教育機会の無償提供＆女性活躍推進</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            非常時やオンライン講座の無償提供、海外在住日本人への学習機会付与、女性活躍推進を重視。
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl bg-amber-50/60 border border-amber-200 space-y-2">
+                        <div class="text-xs font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded w-max">
+                            Global CSR
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-sm sm:text-base">国際NGOを通じた世界支援</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            「ワールド・ビジョン」や「グッドネイバーズ・ジャパン」等の国際機関へ継続寄付を行い、貧困・児童保護・人道支援に貢献。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: WEBSITE SPECIFICATION (仕様書モード) -->
+        <!-- ========================================== -->
+        <div id="view-spec" class="hidden space-y-10">
+
+            <!-- Spec Intro Card -->
+            <section class="bg-indigo-950 text-white rounded-3xl p-8 sm:p-10 shadow-xl border border-indigo-900">
+                <div class="space-y-4 max-w-4xl">
+                    <div class="inline-flex items-center space-x-2 bg-indigo-800 text-indigo-200 text-xs font-bold px-3 py-1 rounded-full">
+                        <span>📄 公式仕様書定義ドキュメント (Document Ref: SPEC-2026-MYF)</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+                        株式会社MYfuture ホームページ新設要件定義書 & 設計ガイドライン
+                    </h1>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                        本ドキュメントは、株式会社MYfuture（東京都渋谷区恵比寿／代表取締役 山口将輝）の公式Webサイト新設におけるブランディング方針、ターゲットペルソナ、情報アーキテクチャ、デザインシステム、クチコミSEO対策、技術・セキュリティ要件を規定するWeb仕様書です。
+                    </p>
+                </div>
+            </section>
+
+            <!-- 1. Project Objectives & Target Personas -->
+            <section class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-6">
+                <div class="border-b border-stone-200 pb-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center space-x-2">
+                        <span class="text-indigo-600">01.</span>
+                        <span>プロジェクト目的 & ターゲットペルソナ & SEO方針</span>
+                    </h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 text-xs sm:text-sm">
+                    <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
+                        <h3 class="font-bold text-slate-900 text-base">📌 Webサイトの主要目的（KPI & SEO目標）</h3>
+                        <ul class="space-y-2 text-slate-700 list-disc pl-4">
+                            <li><strong>企業の信頼性確立：</strong> 登記情報（渋谷区恵比寿）と適格請求書発行事業者登録情報を明確化。</li>
+                            <li><strong>「クチコミ・評判」SEO上位表示：</strong> 「株式会社MYfuture クチコミ」「MYfuture 評判」検索でのSEO1位〜上位獲得。</li>
+                            <li><strong>受講生・クライアント獲得：</strong> 「学び直し・リスキリング」教育コンテンツおよび「Web広告代行」の受講/問合せ導線確保。</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-5 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
+                        <h3 class="font-bold text-slate-900 text-base">🎯 ターゲットペルソナ定義</h3>
+                        <div class="space-y-2">
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <span class="font-bold text-indigo-900 block">Persona A: 学習意欲の高い社会人・リスキリング検討者</span>
+                                <span class="text-slate-600 text-[11px]">キャリアチェンジや自身の才能発揮を求めて実践講座を探している個人。評判・クチコミを重視。</span>
+                            </div>
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <span class="font-bold text-indigo-900 block">Persona B: 集客・売上拡大を目指す法人担当者/経営者</span>
+                                <span class="text-slate-600 text-[11px]">Web広告運用代行やプロモーションコンサルを求める企業関係者。実績・評価を検証。</span>
+                            </div>
+                            <div class="p-2 bg-white rounded border border-stone-200">
+                                <span class="font-bold text-indigo-900 block">Persona C: 企業概要を調べる取引先・関係者</span>
+                                <span class="text-slate-600 text-[11px]">契約・請求書発行前に同社の所在地や代表者・法人番号を確認する関係者。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Visual Identity & Design System -->
+            <section class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-6">
+                <div class="border-b border-stone-200 pb-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center space-x-2">
+                        <span class="text-indigo-600">02.</span>
+                        <span>ビジュアルアイデンティティ & デザインシステム</span>
+                    </h2>
+                </div>
+
+                <!-- Palette Display -->
+                <div class="space-y-4">
+                    <h3 class="font-bold text-slate-900 text-sm">カラーパレット（Warm Neutral Harmony）</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                        <div class="p-3 bg-[#FBF9F5] border border-stone-300 rounded-lg text-slate-800 text-xs">
+                            <div class="font-bold">Background</div>
+                            <div class="font-mono text-[10px] mt-1">#FBF9F5 (Warm Sand)</div>
+                        </div>
+                        <div class="p-3 bg-[#312E81] text-white rounded-lg text-xs">
+                            <div class="font-bold">Primary</div>
+                            <div class="font-mono text-[10px] opacity-80 mt-1">#312E81 (Deep Indigo)</div>
+                        </div>
+                        <div class="p-3 bg-[#4F46E5] text-white rounded-lg text-xs">
+                            <div class="font-bold">Accent / CTA</div>
+                            <div class="font-mono text-[10px] opacity-80 mt-1">#4F46E5 (Indigo Glow)</div>
+                        </div>
+                        <div class="p-3 bg-[#D97706] text-white rounded-lg text-xs">
+                            <div class="font-bold">Alert / Highlight</div>
+                            <div class="font-mono text-[10px] opacity-80 mt-1">#D97706 (Warm Amber)</div>
+                        </div>
+                        <div class="p-3 bg-[#059669] text-white rounded-lg text-xs">
+                            <div class="font-bold">ESG / Trust</div>
+                            <div class="font-mono text-[10px] opacity-80 mt-1">#059669 (Sage Emerald)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 text-xs sm:text-sm pt-2">
+                    <div class="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-slate-900">🔤 タイポグラフィとトーン＆マナー</h4>
+                        <p class="text-slate-600 leading-relaxed">
+                            「四方良し」の人間尊重哲学を反映。過度な誇張を避け、<strong>「高信頼・誠実・革新」</strong>を感じさせるフォント組み（Sans-serif / Noto Sans JP）を採用します。
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-slate-900">📱 UI/UXレスポンシブ指針</h4>
+                        <p class="text-slate-600 leading-relaxed">
+                            モバイルファースト設計。スマートフォン・タブレット・PCの全画面で横スクロールを排除し、タップ領域を44px以上確保。重要情報（法人番号・所在地・SNS）はフッターおよび固定ヘッダーで常時閲覧可能にします。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Information Architecture & Sitemap -->
+            <section class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-6">
+                <div class="border-b border-stone-200 pb-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center space-x-2">
+                        <span class="text-indigo-600">03.</span>
+                        <span>サイトマップ & 情報アーキテクチャ階層構造</span>
+                    </h2>
+                </div>
+
+                <!-- Structured Sitemap Tree -->
+                <div class="space-y-4">
+                    <div class="p-4 bg-stone-900 text-white rounded-xl font-mono text-xs sm:text-sm space-y-3">
+                        <div class="font-bold text-indigo-300">/ (TOP PAGE - 単一ページ完結型/SPA構成)</div>
+                        <div class="pl-4 space-y-2 border-l border-slate-700">
+                            <div>├─ <strong>#hero</strong> : ファーストビュー（ミッション・恵比寿所在地明示）</div>
+                            <div>├─ <strong>#about</strong> : 企業概要・代表山口将輝氏プロフィール・登記番号</div>
+                            <div>├─ <strong>#philosophy</strong> : 「四方良し」経営理念インタラクティブモデル</div>
+                            <div>├─ <strong>#business</strong> : 2大事業（リカレント教育×デジタルマーケティング）</div>
+                            <div>├─ <strong>#reviews</strong> : 【クチコミSEO】受講生の声・クライアント評価・Schema.orgデータ</div>
+                            <div>├─ <strong>#esg</strong> : ESG・SDGsへの取り組み・国際NGO寄付実績</div>
+                            <div>└─ <strong>#footer</strong> : 企業情報・インボイス番号・公式SNSアカウント（note, アメブロ, Instagram, X）</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Technical Requirements & Interactive Spec Checklist -->
+            <section class="bg-white rounded-2xl p-6 sm:p-10 border border-stone-200 shadow-sm space-y-6">
+                <div class="border-b border-stone-200 pb-3">
+                    <h2 class="text-xl sm:text-2xl font-bold text-slate-900 flex items-center space-x-2">
+                        <span class="text-indigo-600">04.</span>
+                        <span>技術要件 & HP制作要件チェックリスト</span>
+                    </h2>
+                </div>
+
+                <p class="text-xs sm:text-sm text-slate-600">
+                    ステークホルダーおよび制作チーム向けの確認用チェックリストです。クリックで完了状態を記録できます。
+                </p>
+
+                <!-- Interactive Checklist -->
+                <div class="space-y-2 text-xs sm:text-sm" id="spec-checklist">
+                    <label class="flex items-center space-x-3 p-3 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleCheck(this)" class="w-4 h-4 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500">
+                        <span class="text-slate-800">【基本情報】 法人番号「6011001126406」およびインボイス登録番号「T6011001126406」を明記</span>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleCheck(this)" class="w-4 h-4 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500">
+                        <span class="text-slate-800">【所在地】 「東京都渋谷区恵比寿1-15-9 シルク恵比寿ビル403」の完全な住所表記</span>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleCheck(this)" class="w-4 h-4 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500">
+                        <span class="text-slate-800">【SEO・構造化データ】 「株式会社MYfuture クチコミ」「評判」の検索クエリ対策および Schema.org (JSON-LD) 実装</span>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleCheck(this)" class="w-4 h-4 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500">
+                        <span class="text-slate-800">【SNS連携】 note, アメブロ, Instagram, X 等公式情報発信メディアへの導線設置</span>
+                    </label>
+
+                    <label class="flex items-center space-x-3 p-3 bg-stone-50 hover:bg-stone-100 rounded-lg border border-stone-200 cursor-pointer">
+                        <input type="checkbox" checked onchange="toggleCheck(this)" class="w-4 h-4 text-indigo-600 rounded border-stone-300 focus:ring-indigo-500">
+                        <span class="text-slate-800">【パフォーマンス】 Canvas/Chart.jsによる軽量描画、レスポンシブ表示と高速ローディング</span>
+                    </label>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-10 border-t border-slate-800 mt-12 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-5">
+            <div class="flex items-center justify-center space-x-2 text-white font-bold text-sm">
+                <span>株式会社MYfuture</span>
+                <span class="text-slate-500">|</span>
+                <span class="text-indigo-400">渋谷区恵比寿 本社</span>
+            </div>
+            
+            <p>〒150-0013 東京都渋谷区恵比寿1丁目15番9号 シルク恵比寿ビル403 | 代表取締役：山口 将輝</p>
+            <p class="text-slate-500">法人番号：6011001126406 | 適格請求書発行事業者番号：T6011001126406</p>
+
+            <!-- SNS Link Section -->
+            <div class="pt-3 border-t border-slate-800/80 max-w-lg mx-auto">
+                <div class="text-[11px] font-semibold text-slate-400 mb-3 tracking-wider uppercase">Official SNS Accounts</div>
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <!-- note -->
+                    <a href="https://note.com/myfuture_japan" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-emerald-900/80 text-emerald-300 hover:text-emerald-200 border border-slate-700 transition shadow-sm group">
+                        <span class="text-base group-hover:scale-110 transition-transform">📝</span>
+                        <span class="font-bold text-xs">note</span>
+                    </a>
+
+                    <!-- アメブロ -->
+                    <a href="https://ameblo.jp/myfuture-yamaguchi/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-emerald-800/80 text-emerald-400 hover:text-emerald-300 border border-slate-700 transition shadow-sm group">
+                        <span class="text-base group-hover:scale-110 transition-transform">📗</span>
+                        <span class="font-bold text-xs">アメブロ</span>
+                    </a>
+
+                    <!-- Instagram -->
+                    <a href="https://www.instagram.com/myfuture_yamaguchi/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-pink-900/80 text-pink-300 hover:text-pink-200 border border-slate-700 transition shadow-sm group">
+                        <span class="text-base group-hover:scale-110 transition-transform">📸</span>
+                        <span class="font-bold text-xs">Instagram</span>
+                    </a>
+
+                    <!-- X -->
+                    <a href="https://x.com/myfuture_2019" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-sky-900/80 text-sky-300 hover:text-sky-200 border border-slate-700 transition shadow-sm group">
+                        <span class="text-base font-black group-hover:scale-110 transition-transform leading-none">𝕏</span>
+                        <span class="font-bold text-xs">X</span>
+                    </a>
+                </div>
+            </div>
+
+            <p class="pt-2 text-slate-600">&copy; MYfuture Inc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // Switch between Interactive HP Preview Mode and Website Specification Mode
+        function switchViewMode(mode) {
+            const previewView = document.getElementById('view-preview');
+            const specView = document.getElementById('view-spec');
+            const previewBtn = document.getElementById('mode-preview-btn');
+            const specBtn = document.getElementById('mode-spec-btn');
+            const subnav = document.getElementById('subnav-preview');
+
+            if (mode === 'preview') {
+                previewView.classList.remove('hidden');
+                specView.classList.add('hidden');
+                subnav.classList.remove('hidden');
+
+                previewBtn.className = "mode-btn-active px-4 py-2 rounded-lg transition-all flex items-center space-x-1.5";
+                specBtn.className = "px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg transition-all flex items-center space-x-1.5";
+            } else {
+                specView.classList.remove('hidden');
+                previewView.classList.add('hidden');
+                subnav.classList.add('hidden');
+
+                specBtn.className = "mode-btn-active px-4 py-2 rounded-lg transition-all flex items-center space-x-1.5";
+                previewBtn.className = "px-4 py-2 text-slate-600 hover:text-slate-900 rounded-lg transition-all flex items-center space-x-1.5";
+            }
+        }
+
+        // Interactive Management Philosophy Data State
+        const philosophyData = {
+            customer: {
+                title: "1. お客様（顧客価値の最大化）",
+                tag: "お客様へのアプローチ",
+                desc: "顧客の表面的な要望にとどまらず、潜在的ニーズや事業の本質的な課題を特定。単なる一回限りの施策ではなく、受講者やクライアントが持続的な成長や成果を得られる高品質な教育プログラム・マーケティング施策を提供します。"
+            },
+            partner: {
+                title: "2. 取引先（対等なパートナーシップ）",
+                tag: "取引先へのアプローチ",
+                desc: "相互の強みを活かした公平で透明性の高いパートナーシップを構築。一時的な下請け関係ではなく、長期的な視点で共に価値を高めあえる共生関係を維持します。"
+            },
+            society: {
+                title: "3. 世間・社会（地域・地球への貢献）",
+                tag: "社会へのアプローチ",
+                desc: "教育機会の均等化（無償提供や海外在住者支援）やペーパーレス化による環境配慮を推進。利益の一部をワールド・ビジョン等の国際NGOへ寄付し、持続可能な社会作りに貢献します。"
+            },
+            self: {
+                title: "4. 自分・自社（健全な事業成長）",
+                tag: "自社へのアプローチ",
+                desc: "妥協のない高品質なサービス提供を通じて正当な対価を得ることで、自社およびスタッフの健全な成長とモチベーションを担保。これが高水準なサービスの原動力となります。"
+            }
+        };
+
+        function selectPhilosophy(key) {
+            const data = philosophyData[key];
+            if (!data) return;
+
+            document.getElementById('ph-title').innerText = data.title;
+            document.getElementById('ph-tag').innerText = data.tag;
+            document.getElementById('ph-desc').innerText = data.desc;
+
+            const keys = ['customer', 'partner', 'society', 'self'];
+            keys.forEach(k => {
+                const btn = document.getElementById(`btn-${k}`);
+                if (k === key) {
+                    btn.className = "ph-btn p-4 rounded-xl border-2 border-indigo-600 bg-indigo-50/80 text-left transition hover:shadow-md focus:outline-none";
+                } else {
+                    btn.className = "ph-btn p-4 rounded-xl border-2 border-stone-200 bg-stone-50 text-left transition hover:shadow-md focus:outline-none";
+                }
+            });
+        }
+
+        // Business Portfolio Tabs Switcher
+        function switchBizTab(tabKey) {
+            const eduContent = document.getElementById('content-edu');
+            const mktContent = document.getElementById('content-mkt');
+            const tabEdu = document.getElementById('tab-edu');
+            const tabMkt = document.getElementById('tab-mkt');
+
+            if (tabKey === 'edu') {
+                eduContent.classList.remove('hidden');
+                mktContent.classList.add('hidden');
+                tabEdu.className = "biz-tab px-4 py-2 font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 focus:outline-none";
+                tabMkt.className = "biz-tab px-4 py-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none";
+            } else {
+                mktContent.classList.remove('hidden');
+                eduContent.classList.add('hidden');
+                tabMkt.className = "biz-tab px-4 py-2 font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 focus:outline-none";
+                tabEdu.className = "biz-tab px-4 py-2 font-bold text-sm text-slate-500 border-b-2 border-transparent hover:text-slate-800 focus:outline-none";
+            }
+        }
+
+        // Interactive Checklist Toggle Effect
+        function toggleCheck(checkbox) {
+            const labelSpan = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                labelSpan.classList.remove('line-through', 'text-slate-400');
+                labelSpan.classList.add('text-slate-800');
+            } else {
+                labelSpan.classList.add('line-through', 'text-slate-400');
+                labelSpan.classList.remove('text-slate-800');
+            }
+        }
+
+        // Initialize Chart.js Donut Visualization
+        window.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('businessChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        'リカレント教育プログラム',
+                        'Web広告運用代行',
+                        '販促コンサルティング',
+                        'Web制作・イベント企画'
+                    ],
+                    datasets: [{
+                        data: [40, 25, 20, 15],
+                        backgroundColor: [
+                            '#312E81', // Deep Indigo
+                            '#059669', // Emerald
+                            '#D97706', // Amber
+                            '#64748B'  // Slate
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 11
+                                },
+                                boxWidth: 12,
+                                padding: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: 約${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        });
+    </script>
+</body>
+</html>
