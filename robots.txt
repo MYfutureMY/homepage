@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://homepage-liart-xi.vercel.app/sitemap.xml
