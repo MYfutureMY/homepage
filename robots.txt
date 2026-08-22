@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://homepage-liart-xi.vercel.app/sitemap.xml
+Sitemap: https://my-future.blog/sitemap.xml
